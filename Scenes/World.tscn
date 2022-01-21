@@ -1,0 +1,71 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Target/Target.tscn" type="PackedScene" id=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0.164706, 0.454902, 0, 1 )
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0, 0.411765, 0.207843, 1 )
+
+[node name="World" type="Spatial"]
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0336807, 0.0189795, -0.0340676 )
+acceleration = 20.0
+
+[node name="Ground" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.139677, -1.00878, -90.5192 )
+use_collision = true
+width = 43.7746
+depth = 223.184
+material = SubResource( 1 )
+
+[node name="CSGBox2" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1055, 0.409165, -0.0280242 )
+use_collision = true
+width = 8.72718
+depth = 12.9023
+material = SubResource( 2 )
+
+[node name="CSGBox3" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15.1134, 0.05445, -0.0280242 )
+use_collision = true
+width = 8.72718
+height = 3.86863
+depth = 12.9023
+material = SubResource( 2 )
+
+[node name="CSGBox4" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15.1134, -0.410152, -11.6324 )
+use_collision = true
+width = 8.72718
+height = 10.0428
+depth = 12.9023
+material = SubResource( 2 )
+
+[node name="CSGBox5" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.00245, 0.376287, 12.2335 )
+use_collision = true
+width = 17.6883
+height = 19.1484
+depth = 3.49311
+material = SubResource( 2 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 9.09301, 0 )
+shadow_enabled = true
+
+[node name="KinematicBody2" parent="." instance=ExtResource( 2 )]
+transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, 4.949, 0, -15.7931 )
+
+[node name="KinematicBody3" parent="." instance=ExtResource( 2 )]
+transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, -0.991, 0, -15.2228 )
+
+[node name="KinematicBody4" parent="." instance=ExtResource( 2 )]
+transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, -5.63965, 0, -5.90003 )
+
+[node name="KinematicBody" parent="." instance=ExtResource( 2 )]
+transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, -0.293642, 0, -8.01958 )
+[connection signal="enemy_died" from="KinematicBody" to="Player" method="_on_KinematicBody_enemy_died"]

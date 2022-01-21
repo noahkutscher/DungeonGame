@@ -30,7 +30,6 @@ func die():
 	
 
 func handle_hit(dmg, dmg_type):
-	print("Got Hit for ", dmg, "dmg of type ", dmg_type)
 	hp -= dmg
 	hp_bar.value = hp
 	
@@ -43,9 +42,3 @@ func unselect():
 func select():
 	hp_bar_display.show()
 
-func _on_Area_input_event(camera, event, _click_position, _click_normal, _shape_idx):
-	if event.is_action_pressed(selection_action):
-		select()
-		var player = camera.find_parent("Player")
-		player.target = self
-		

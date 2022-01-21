@@ -58,14 +58,10 @@ transform = Transform( 0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75,
 shadow_enabled = true
 
 [node name="KinematicBody2" parent="." instance=ExtResource( 2 )]
-transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, 4.949, 0, -15.7931 )
-
-[node name="KinematicBody3" parent="." instance=ExtResource( 2 )]
-transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, -0.991, 0, -15.2228 )
-
-[node name="KinematicBody4" parent="." instance=ExtResource( 2 )]
-transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, -5.63965, 0, -5.90003 )
+transform = Transform( -0.820651, 0, 0.57143, 0, 1, 0, -0.57143, 0, -0.820651, 4.949, 0, -15.7931 )
 
 [node name="KinematicBody" parent="." instance=ExtResource( 2 )]
-transform = Transform( 0.999186, 0.0403411, 0, -0.0403411, 0.999186, 0, 0, 0, 1, -0.293642, 0, -8.01958 )
-[connection signal="enemy_died" from="KinematicBody" to="Player" method="_on_KinematicBody_enemy_died"]
+transform = Transform( -0.574705, 0, -0.81836, 0, 1, 0, 0.81836, 0, -0.574705, -12.0921, 0, -21.195 )
+
+[node name="KinematicBody3" parent="." instance=ExtResource( 2 )]
+transform = Transform( -0.980344, 0, 0.197298, 0, 1, 0, -0.197298, 0, -0.980344, -7.36861, 0, -22.1678 )

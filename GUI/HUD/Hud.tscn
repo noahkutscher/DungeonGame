@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://GUI/TargetHealthBar/barHorizontal_green_mid 200.png" type="Texture" id=1]
 [ext_resource path="res://GUI/TargetHealthBar/barHorizontal_yellow_mid 200.png" type="Texture" id=2]
+[ext_resource path="res://GUI/HUD/ActionBar.png" type="Texture" id=3]
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -28,6 +29,125 @@ margin_right = 264.0
 margin_bottom = 66.0
 value = 100.0
 texture_progress = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionBar" type="TextureRect" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -128.0
+margin_top = -88.0
+margin_bottom = -23.0
+texture = ExtResource( 3 )
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slot1" type="TextureRect" parent="ActionBar"]
+margin_right = 64.0
+margin_bottom = 64.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ActionBar/Slot1"]
+margin_left = 48.0
+margin_top = 8.0
+margin_right = 56.0
+margin_bottom = 24.0
+text = "1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="ActionBar/Slot1"]
+margin_left = 8.0
+margin_top = 16.0
+margin_right = 48.0
+margin_bottom = 56.0
+text = "Auto
+Attack"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slot2" type="TextureRect" parent="ActionBar"]
+margin_left = 64.0
+margin_right = 128.0
+margin_bottom = 64.0
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="ActionBar/Slot2"]
+margin_left = 48.0
+margin_top = 8.0
+margin_right = 56.0
+margin_bottom = 24.0
+text = "2"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="ActionBar/Slot2"]
+margin_left = 8.0
+margin_top = 16.0
+margin_right = 48.0
+margin_bottom = 56.0
+text = "Heal
+30%"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel4" type="RichTextLabel" parent="ActionBar/Slot2"]
+margin_left = 72.0
+margin_top = 16.0
+margin_right = 112.0
+margin_bottom = 56.0
+text = "Taunt"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slot3" type="TextureRect" parent="ActionBar"]
+margin_left = 128.0
+margin_right = 192.0
+margin_bottom = 64.0
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="ActionBar/Slot3"]
+margin_left = 48.0
+margin_top = 8.0
+margin_right = 56.0
+margin_bottom = 24.0
+text = "3"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Slot4" type="TextureRect" parent="ActionBar"]
+margin_left = 192.0
+margin_right = 256.0
+margin_bottom = 64.0
+
+[node name="RichTextLabel4" type="RichTextLabel" parent="ActionBar/Slot4"]
+margin_left = 48.0
+margin_top = 8.0
+margin_right = 56.0
+margin_bottom = 24.0
+text = "4"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="ActionBar/Slot4"]
+margin_left = 8.0
+margin_top = 16.0
+margin_right = 48.0
+margin_bottom = 56.0
+text = "Hurt
+Self"
 __meta__ = {
 "_edit_use_anchors_": false
 }

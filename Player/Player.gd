@@ -1,5 +1,8 @@
 extends KinematicBody
 
+class_name Player
+func get_class(): return "Player"
+
 export var speed: float = 8
 export var acceleration: float = 15
 export var air_acceleration: float = 5
@@ -39,6 +42,12 @@ onready var camera_pivot = $CameraPivot
 onready var camera_boom = $CameraPivot/CameraBoom
 onready var camera = $CameraPivot/CameraBoom/Camera
 onready var animation_handler = $Hexblade
+onready var hud = $HUD
+onready var hp_bar = $HUD/Health
+
+func _ready():
+	hp_bar.max_value = maxHP
+	
 	
 func _input(event):
 	
@@ -144,7 +153,7 @@ func auto_attack(delta):
 	if current_auto_attach_cooldown > auto_attack_cooldown:
 		if(translation - target.translation).length() < meele_range:
 			animation_handler.playAttackAnimaiton("Hexblade_Base-loop")
-			target.handle_hit(10, "physical")
+			target.handle_hit(25, "physical")
 			current_auto_attach_cooldown = 0
 		else:
 			animation_handler.cancelAttackAnimation()
@@ -156,27 +165,41 @@ func handle_action():
 	if Input.is_action_just_pressed("select_next"):
 		var a = get_tree().get_nodes_in_group("targetable")
 		if len(a) > 0:
+			if target_selection_idx >= len(a):
+				target_selection_idx = 0 
+				
 			setTarget(a[target_selection_idx])
 			target.select()
 			target_selection_idx+=1
-			if target_selection_idx >= len(a):
-				target_selection_idx = 0 
 	
+	if Input.is_action_just_pressed("hk_2"):
+		handle_heal(30)
+		
+	if Input.is_action_just_pressed("hk_4"):
+		handle_hit(10, "physical")
+		
+		
 	if not target == null:
 		if Input.is_action_just_pressed("hk_1"):
+			hud.find_node("Slot1", true).texture = load("res://GUI/HUD/ActiveFrame.png")
 			attacking = true
+			
+		if Input.is_action_just_pressed("hk_3") and target.get_class() == "Enemy":
+			target.setTarget(self)
+			
 		
 		if Input.is_action_just_pressed("ui_cancel"):
 			attacking = false
 			animation_handler.cancelAttackAnimation()
 			target.unselect()
 			target = null
+			hud.find_node("Slot1", true).texture = null
 
 func _handle_taget_died(reference):
-	print("target died!")
 	attacking = false
 	animation_handler.cancelAttackAnimation()
 	target = null
+	hud.find_node("Slot1", true).texture = null
 		
 	
 func setTarget(selection):
@@ -190,3 +213,10 @@ func setTarget(selection):
 	target = selection
 	target.connect("enemy_died", self, "_handle_taget_died")
 	
+func handle_hit(dmg, dmg_type):
+	hp = clamp(hp - dmg, 0, maxHP)
+	hp_bar.value = hp
+
+func handle_heal(heal):
+	hp = clamp(hp + heal, 0, maxHP)
+	hp_bar.value = hp

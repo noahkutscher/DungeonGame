@@ -6,6 +6,7 @@
 script = ExtResource( 1 )
 skill_name = "Heal"
 mana_cost = 15
+target_range = 15.0
 cast_time = 1.5
 hostile = false
 base_damage = 10

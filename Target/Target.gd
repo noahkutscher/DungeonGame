@@ -26,7 +26,7 @@ func die():
 	queue_free()
 	
 
-func handle_hit(dmg, dmg_type):
+func handle_hit(dmg, dmg_type, source_entity):
 	if dmg_type == "none":
 		return
 	hp -= dmg

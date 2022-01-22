@@ -3,54 +3,52 @@ extends KinematicBody
 class_name Player
 func get_class(): return "Player"
 
+# exports
 export var speed: float = 8
 export var acceleration: float = 15
 export var air_acceleration: float = 5
 export var gravity: float = 0.98
 export var max_terminl_velocity: float = 54
 export var jump_power: float = 20
-
 export var turn_speed: float = 240
 export var meele_range: float = 2
-
 export(float, 0.1, 1) var mouse_sensetivity: float = 0.3
 export(float, -90, 0) var min_pitch: float = -80
 export(float, 0, 90) var max_pitch: float = 80
 
+# movement
 var velocity: Vector3
 var y_velocity: float
-
 var mouse_turning: bool = false
 var mouse_looking: = false
 var target_selection_idx: int = 0
-
 var is_moving: bool = false
 var is_jumping: bool = false
 
+# selection
 var just_selected: bool = false
-
 var target: Target = null setget setTarget
+var cast_target: Target = null
 
+# status
+var maxHP = 100
+onready var hp = maxHP
+var maxEnergy = 100
+onready var energy = maxEnergy
+var buff_list: Array = []
+
+# actions
 var auto_attack_cooldown: float = 2
 var current_auto_attack_cooldown: float = 0
 var attacking: bool = false
-
 var casting: bool = false
 var current_cast: Skill = null
-var cast_target: Target = null
 var cast_timer: float = 0
 onready var heal_spell: Skill = load("res://Resources/Skills/heal.tres")
 onready var damage_spell: Skill = load("res://Resources/Skills/damage.tres")
+onready var hot: Buff = load("res://Resources/Buffs/hot.tres")
 
-var maxHP = 100
-onready var hp = maxHP
-
-var maxEnergy = 100
-onready var energy = maxEnergy
-
-
-################### NODES #######################
-
+# nodes
 onready var camera_pivot = $CameraPivot
 onready var camera_boom = $CameraPivot/CameraBoom
 onready var camera = $CameraPivot/CameraBoom/Camera
@@ -91,6 +89,7 @@ func _input(event):
 
 func _process(delta):
 	handle_resource_regen(delta)
+	handle_effects(delta)
 	
 	handle_action()
 	handle_cast(delta)
@@ -100,6 +99,10 @@ func _process(delta):
 func _physics_process(delta):
 	handle_movement(delta)
 	animation_handler.handle_animation(self)
+	
+###############################
+########## Handler ############
+###############################
 	
 func handle_movement(delta):
 	
@@ -214,20 +217,8 @@ func handle_auto_attack(delta):
 	if not target == null and attacking:
 		auto_attack(delta)
 
-func auto_attack(delta):
-	current_auto_attack_cooldown += delta
-	if current_auto_attack_cooldown > auto_attack_cooldown:
-		if(translation - target.translation).length() < meele_range:
-			animation_handler.playAttackAnimaiton("Hexblade_Base-loop")
-			target.handle_hit(25, "physical")
-			current_auto_attack_cooldown = 0
-		else:
-			animation_handler.cancelAttackAnimation()
-			current_auto_attack_cooldown = 0
-			hud.display_message("Out of Range")
-
 func handle_resource_regen(delta):
-	energy = clamp(energy + delta * 10, 0, maxEnergy)
+	energy = clamp(energy + delta * 2, 0, maxEnergy)
 	energy_bar.value = energy
 
 func handle_hit(dmg, dmg_type):
@@ -236,7 +227,19 @@ func handle_hit(dmg, dmg_type):
 	hp = clamp(hp - dmg, 0, maxHP)
 	hp_bar.value = hp
 
-
+func handle_effects(delta):
+	if len(buff_list) == 0:
+		return
+	
+	for i in len(buff_list):
+		var buff = buff_list[i]
+		buff[1] += delta
+		if buff[0].duration <= buff[1]:
+			buff_list.remove(i)
+			print("Removed Buff ", buff[0].name)
+			return
+			
+	
 ###############################
 ########## Targeting ##########
 ###############################
@@ -267,6 +270,18 @@ func setTarget(selection):
 ########## CASTING ############
 ###############################
 
+func auto_attack(delta):
+	current_auto_attack_cooldown += delta
+	if current_auto_attack_cooldown > auto_attack_cooldown:
+		if(translation - target.translation).length() < meele_range:
+			animation_handler.playAttackAnimaiton("Hexblade_Base-loop")
+			target.handle_hit(25, "physical", self)
+			current_auto_attack_cooldown = 0
+		else:
+			animation_handler.cancelAttackAnimation()
+			current_auto_attack_cooldown = 0
+			hud.display_message("Out of Range")
+
 func start_cast(spell: Skill):
 	if energy < spell.mana_cost:
 		hud.display_message("Not Enough Mana")
@@ -285,18 +300,18 @@ func start_cast(spell: Skill):
 	current_cast= spell
 	casting = true
 	
-	
 func finish_cast():
 	cast_bar.hide()
 	cast_timer = 0
 	casting = false
 	
 	if current_cast.hostile == true:
-		cast_target.handle_hit(current_cast.base_damage, "magical")
+		cast_target.handle_hit(current_cast.base_damage, "magical", self)
 		cast_target == null
 	else:
 		hp = clamp(hp + current_cast.base_damage , 0, maxHP)
 		hp_bar.value = hp
+		buff_list.append([hot, 0])
 	
 func interrupt_cast():
 	cast_bar.hide()

@@ -12,6 +12,8 @@ var velocity: Vector3
 var direction: Vector3
 var meele_range: float = 2
 
+var threat: Dictionary = {}
+
 export var speed: float = 5
 export var acceleration: float = 10
 export var gravity: float = 0.98
@@ -20,9 +22,23 @@ export var max_terminl_velocity: float = 54
 var auto_attack_cooldown: float = 2
 var current_auto_attach_cooldown: float = 0
 
-func _physics_process(delta):
+func _process(delta):
+	handle_threat()
 	handleAttack(delta)
+
+func _physics_process(delta):
 	handle_movement(delta)
+	
+func handle_threat():
+	if len(threat.keys()) == 0:
+		return
+	
+	for i in threat.keys():
+		if target == null:
+			target = i
+			
+		if threat[i] > threat[target]:
+			target = i
 
 func handle_movement(delta):
 	if target == null:
@@ -49,17 +65,29 @@ func auto_attack(delta):
 			current_auto_attach_cooldown = 0
 		else:
 			current_auto_attach_cooldown = 0
+			
+func handle_hit(dmg, dmg_type, source_entity):
+	if dmg_type == "none":
+		return
+	hp -= dmg
+	hp_bar.value = hp
+	
+	threat[source_entity] = 1
+	
+	if hp <= 0:
+		die()
 
 func handleAttack(delta):
 	if target != null:
 		auto_attack(delta)
 	
 func setTarget(player: Player):
-	target = player
+	threat = {}
+	threat[player] = 1
 
 func _on_FOV_body_entered(body):
 	if body.get_class() == "Player":
-		target = body
+		threat[body] = 1
 
 
 func _on_MouseSelectionArea_input_event(camera, _event, _click_position, _click_normal, _shape_idx):

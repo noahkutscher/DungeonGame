@@ -32,11 +32,24 @@ var just_selected: bool = false
 var target: Target = null setget setTarget
 
 var auto_attack_cooldown: float = 2
-var current_auto_attach_cooldown: float = 0
+var current_auto_attack_cooldown: float = 0
 var attacking: bool = false
+
+var casting: bool = false
+var current_cast: Skill = null
+var cast_target: Target = null
+var cast_timer: float = 0
+onready var heal_spell: Skill = load("res://Resources/Skills/heal.tres")
+onready var damage_spell: Skill = load("res://Resources/Skills/damage.tres")
 
 var maxHP = 100
 onready var hp = maxHP
+
+var maxEnergy = 100
+onready var energy = maxEnergy
+
+
+################### NODES #######################
 
 onready var camera_pivot = $CameraPivot
 onready var camera_boom = $CameraPivot/CameraBoom
@@ -44,10 +57,15 @@ onready var camera = $CameraPivot/CameraBoom/Camera
 onready var animation_handler = $Hexblade
 onready var hud = $HUD
 onready var hp_bar = $HUD/Health
+onready var energy_bar = $HUD/Energy
+onready var cast_bar = $HUD/Cast
+
 
 func _ready():
 	hp_bar.max_value = maxHP
-	
+	energy_bar.max_value = maxEnergy
+	cast_bar.value = 0
+	cast_bar.hide()
 	
 func _input(event):
 	
@@ -71,8 +89,15 @@ func _input(event):
 			camera_pivot.rotation_degrees.x = clamp(camera_pivot.rotation_degrees.x, min_pitch, max_pitch)
 			rotation_degrees.y -= event.relative.x * mouse_sensetivity
 
-func _physics_process(delta):
+func _process(delta):
+	handle_resource_regen(delta)
+	
 	handle_action()
+	handle_cast(delta)
+	if not casting:
+		handle_auto_attack(delta)
+
+func _physics_process(delta):
 	handle_movement(delta)
 	animation_handler.handle_animation(self)
 	
@@ -122,6 +147,8 @@ func handle_movement(delta):
 			
 	direction = direction.normalized()
 	if direction.length() > 0:
+		interrupt_cast()
+		get_groups()
 		is_moving = true
 	else:
 		is_moving = false
@@ -137,6 +164,7 @@ func handle_movement(delta):
 		y_velocity = clamp(y_velocity - gravity, -max_terminl_velocity, max_terminl_velocity)
 		
 	if Input.is_action_just_pressed("jump") and is_on_floor():
+		interrupt_cast()
 		is_jumping = true
 		y_velocity = jump_power
 		
@@ -144,24 +172,7 @@ func handle_movement(delta):
 	
 	velocity = move_and_slide(velocity, Vector3.UP)
 
-func _process(delta):
-	if not target == null and attacking:
-		auto_attack(delta)
-
-func auto_attack(delta):
-	current_auto_attach_cooldown += delta
-	if current_auto_attach_cooldown > auto_attack_cooldown:
-		if(translation - target.translation).length() < meele_range:
-			animation_handler.playAttackAnimaiton("Hexblade_Base-loop")
-			target.handle_hit(25, "physical")
-			current_auto_attach_cooldown = 0
-		else:
-			animation_handler.cancelAttackAnimation()
-			current_auto_attach_cooldown = 0
-			print("Out of range")
-
 func handle_action():
-	
 	if Input.is_action_just_pressed("select_next"):
 		var a = get_tree().get_nodes_in_group("targetable")
 		if len(a) > 0:
@@ -172,36 +183,74 @@ func handle_action():
 			target.select()
 			target_selection_idx+=1
 	
-	if Input.is_action_just_pressed("hk_2"):
-		handle_heal(30)
+	if Input.is_action_just_pressed("ui_cancel"):
+		attacking = false
+		interrupt_cast()
 		
-	if Input.is_action_just_pressed("hk_4"):
-		handle_hit(10, "physical")
-		
-		
-	if not target == null:
-		if Input.is_action_just_pressed("hk_1"):
-			hud.find_node("Slot1", true).texture = load("res://GUI/HUD/ActiveFrame.png")
-			attacking = true
-			
-		if Input.is_action_just_pressed("hk_3") and target.get_class() == "Enemy":
-			target.setTarget(self)
-			
-		
-		if Input.is_action_just_pressed("ui_cancel"):
-			attacking = false
-			animation_handler.cancelAttackAnimation()
+		animation_handler.cancelAttackAnimation()
+		if target != null:
 			target.unselect()
 			target = null
-			hud.find_node("Slot1", true).texture = null
+			
+		hud.find_node("Slot1", true).texture = null
+	
+	if !casting:
+		if Input.is_action_just_pressed("hk_2"):
+			start_cast(heal_spell)
+			
+		if Input.is_action_just_pressed("hk_4"):
+			start_cast(damage_spell)
+			
+			
+		if not target == null:
+			if Input.is_action_just_pressed("hk_1"):
+				hud.find_node("Slot1", true).texture = load("res://GUI/HUD/ActiveFrame.png")
+				attacking = true
+				
+			if Input.is_action_just_pressed("hk_3") and target.get_class() == "Enemy":
+				target.setTarget(self)
+			
+func handle_auto_attack(delta):
+	if not target == null and attacking:
+		auto_attack(delta)
+
+func auto_attack(delta):
+	current_auto_attack_cooldown += delta
+	if current_auto_attack_cooldown > auto_attack_cooldown:
+		if(translation - target.translation).length() < meele_range:
+			animation_handler.playAttackAnimaiton("Hexblade_Base-loop")
+			target.handle_hit(25, "physical")
+			current_auto_attack_cooldown = 0
+		else:
+			animation_handler.cancelAttackAnimation()
+			current_auto_attack_cooldown = 0
+			print("Out of range")
+
+func handle_resource_regen(delta):
+	energy = clamp(energy + delta * 10, 0, maxEnergy)
+	energy_bar.value = energy
+
+func handle_hit(dmg, dmg_type):
+	if dmg_type == "none":
+		return
+	hp = clamp(hp - dmg, 0, maxHP)
+	hp_bar.value = hp
+
+
+###############################
+########## Targeting ##########
+###############################
 
 func _handle_taget_died(reference):
-	attacking = false
-	animation_handler.cancelAttackAnimation()
-	target = null
-	hud.find_node("Slot1", true).texture = null
+	if reference == target:
+		attacking = false
+		animation_handler.cancelAttackAnimation()
+		target = null
+		hud.find_node("Slot1", true).texture = null
 		
-	
+	if reference == cast_target:
+		interrupt_cast()
+		
 func setTarget(selection):
 	if selection == target:
 		return
@@ -211,12 +260,58 @@ func setTarget(selection):
 		target.disconnect("enemy_died", self, "_handle_taget_died")
 		
 	target = selection
-	target.connect("enemy_died", self, "_handle_taget_died")
-	
-func handle_hit(dmg, dmg_type):
-	hp = clamp(hp - dmg, 0, maxHP)
-	hp_bar.value = hp
+	if not target.is_connected("enemy_died", self, "_handle_taget_died"):
+		target.connect("enemy_died", self, "_handle_taget_died")
 
-func handle_heal(heal):
-	hp = clamp(hp + heal, 0, maxHP)
-	hp_bar.value = hp
+###############################
+########## CASTING ############
+###############################
+
+func start_cast(spell: Skill):
+	if energy < spell.mana_cost:
+		print("not enough mana")
+		return
+		
+	if spell.hostile:
+		if target == null:
+			print("no target selected")
+			return
+		cast_target = target
+	
+	energy -= spell.mana_cost
+	energy_bar.value = energy
+	cast_bar.show()
+	cast_timer = 0
+	current_cast= spell
+	casting = true
+	
+	print("Started casting ", current_cast.skill_name)
+	
+func finish_cast():
+	print("Finished casting ", current_cast.skill_name)
+	cast_bar.hide()
+	cast_timer = 0
+	casting = false
+	
+	if current_cast.hostile == true:
+		cast_target.handle_hit(current_cast.base_damage, "magical")
+		cast_target == null
+	else:
+		hp = clamp(hp + current_cast.base_damage , 0, maxHP)
+		hp_bar.value = hp
+	
+func interrupt_cast():
+	cast_bar.hide()
+	cast_timer = 0
+	casting = false
+	
+func handle_cast(delta):
+	if !casting:
+		return
+	
+	cast_timer += delta
+	cast_bar.value = (cast_timer / current_cast.cast_time) * 100
+	if cast_timer >= current_cast.cast_time:
+		finish_cast()
+
+	

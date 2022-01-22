@@ -19,7 +19,9 @@ func handle_animation(player):
 	if attack_animation:
 		return
 		
-	if player.is_jumping:
+	if player.casting:
+		desired_animation = "Magic Spell Casting-loop"
+	elif player.is_jumping:
 		desired_animation = "Jump-loop"
 	elif player.attacking:
 		desired_animation = "IdleFight-loop"

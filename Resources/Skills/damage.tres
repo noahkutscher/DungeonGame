@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Resources/Skills/Skill.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+skill_name = "Damage"
+mana_cost = 50
+cast_time = 2.0
+hostile = true
+base_damage = 20

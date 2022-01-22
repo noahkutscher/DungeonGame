@@ -5,7 +5,7 @@
 [ext_resource path="res://GUI/TargetHealthBar/barHorizontal_green_mid 200.png" type="Texture" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
-radius = 1.01113
+radius = 1.2638
 height = 0.085251
 
 [sub_resource type="ViewportTexture" id=2]
@@ -38,16 +38,11 @@ shape = SubResource( 1 )
 disabled = true
 
 [node name="MouseSelectionArea" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00646043, 0 )
 
 [node name="SelectAreaShape" type="CollisionShape" parent="MouseSelectionArea"]
-transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0.643824, 0 )
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0.942843, 0 )
 shape = SubResource( 1 )
-
-[node name="HealthBarDisplay" type="Sprite3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.07029, 0 )
-material_override = SubResource( 3 )
-cast_shadow = 0
-texture = SubResource( 4 )
 
 [node name="Viewport" type="Viewport" parent="."]
 size = Vector2( 200, 26 )
@@ -61,12 +56,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="HealthBarDisplay" type="Sprite3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.07029, 0 )
+material_override = SubResource( 3 )
+cast_shadow = 0
+texture = SubResource( 4 )
+
 [node name="FOV" type="Area" parent="."]
+input_ray_pickable = false
 collision_layer = 2
 collision_mask = 2
 
 [node name="FOVCollision" type="CollisionShape" parent="FOV"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.793729, 0 )
 shape = SubResource( 5 )
+[connection signal="input_event" from="MouseSelectionArea" to="." method="_on_MouseSelectionArea_input_event"]
 [connection signal="body_entered" from="FOV" to="." method="_on_FOV_body_entered"]
-[connection signal="body_exited" from="FOV" to="." method="_on_FOV_body_exited"]

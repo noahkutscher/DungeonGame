@@ -49,7 +49,6 @@ func auto_attack(delta):
 			current_auto_attach_cooldown = 0
 		else:
 			current_auto_attach_cooldown = 0
-			print("Enemy Attack: Out of range")
 
 func handleAttack(delta):
 	if target != null:
@@ -60,9 +59,10 @@ func setTarget(player: Player):
 
 func _on_FOV_body_entered(body):
 	if body.get_class() == "Player":
-		print("Target Aquired")
 		target = body
-		
-	
-func _on_FOV_body_exited(body):
-	pass
+
+
+func _on_MouseSelectionArea_input_event(camera, _event, _click_position, _click_normal, _shape_idx):
+	if Input.is_action_just_pressed("ClickL"):
+		camera.find_parent("Player").setTarget(self)
+		select()

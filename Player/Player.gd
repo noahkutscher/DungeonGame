@@ -224,7 +224,7 @@ func auto_attack(delta):
 		else:
 			animation_handler.cancelAttackAnimation()
 			current_auto_attack_cooldown = 0
-			print("Out of range")
+			hud.display_message("Out of Range")
 
 func handle_resource_regen(delta):
 	energy = clamp(energy + delta * 10, 0, maxEnergy)
@@ -269,12 +269,12 @@ func setTarget(selection):
 
 func start_cast(spell: Skill):
 	if energy < spell.mana_cost:
-		print("not enough mana")
+		hud.display_message("Not Enough Mana")
 		return
 		
 	if spell.hostile:
 		if target == null:
-			print("no target selected")
+			hud.display_message("No Target")
 			return
 		cast_target = target
 	
@@ -285,10 +285,8 @@ func start_cast(spell: Skill):
 	current_cast= spell
 	casting = true
 	
-	print("Started casting ", current_cast.skill_name)
 	
 func finish_cast():
-	print("Finished casting ", current_cast.skill_name)
 	cast_bar.hide()
 	cast_timer = 0
 	casting = false

@@ -33,7 +33,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Dungeon Game"
-run/main_scene="res://Scenes/Menu/TitleScreen.tscn"
+run/main_scene="res://Scenes/SceneHandler.tscn"
 config/icon="res://icon.png"
 
 [autoload]

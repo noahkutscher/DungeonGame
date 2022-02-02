@@ -12,20 +12,57 @@ __meta__ = {
 }
 
 [node name="Menu" type="VBoxContainer" parent="."]
-anchor_left = 0.1
-anchor_top = 0.1
-anchor_right = 0.9
-anchor_bottom = 0.9
-margin_top = -1.18921
-margin_bottom = -1.18921
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -128.0
+margin_top = -128.0
+margin_right = 128.0
+margin_bottom = 128.0
+custom_constants/separation = 15
+alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="IP_Comp" type="VBoxContainer" parent="Menu"]
+margin_top = 61.0
+margin_right = 256.0
+margin_bottom = 103.0
+
+[node name="Label_IP" type="Label" parent="Menu/IP_Comp"]
+margin_right = 256.0
+margin_bottom = 14.0
+text = "Enter IP:"
+
+[node name="Input_IP" type="LineEdit" parent="Menu/IP_Comp"]
+margin_top = 18.0
+margin_right = 256.0
+margin_bottom = 42.0
+text = "192.168.2.33"
+
+[node name="Port_Comp" type="VBoxContainer" parent="Menu"]
+margin_top = 118.0
+margin_right = 256.0
+margin_bottom = 160.0
+
+[node name="Label_Port" type="Label" parent="Menu/Port_Comp"]
+margin_right = 256.0
+margin_bottom = 14.0
+text = "Enter Port:"
+
+[node name="Input_Port" type="LineEdit" parent="Menu/Port_Comp"]
+margin_top = 18.0
+margin_right = 256.0
+margin_bottom = 42.0
+text = "1909"
+
 [node name="Button" type="Button" parent="Menu"]
-margin_right = 1024.0
-margin_bottom = 20.0
-text = "New Game"
+margin_top = 175.0
+margin_right = 256.0
+margin_bottom = 195.0
+text = "Connect"
 
 [node name="FadeIn" parent="." instance=ExtResource( 1 )]
 visible = false

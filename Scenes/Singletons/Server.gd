@@ -9,7 +9,7 @@ var latency = 0
 var latency_array = []
 var client_clock = 0
 var delta_latency = 0
-
+	
 func _physics_process(delta):
 	client_clock += int(delta * 1000) + delta_latency
 	delta_latency = 0
@@ -41,13 +41,13 @@ func SendPlayerState(player_state):
 	rpc_unreliable_id(1, "RecievePlayerState", player_state)
 	
 remote func SpawnNewPlayer(player_id, spawn_position):
-	get_node("../World").SpawnNewPlayer(player_id, spawn_position)
+	get_node("../SceneHandler/World").SpawnNewPlayer(player_id, spawn_position)
 
 remote func DespawnNewPlayer(player_id):
-	get_node("../World").DespawnNewPlayer(player_id)
+	get_node("../SceneHandler/World").DespawnNewPlayer(player_id)
 	
 remote func RecieveWorldState(world_state):
-	get_node("../World").update_world_state(world_state)
+	get_node("../SceneHandler/World").update_world_state(world_state)
 
 remote func ReturnServerTime(server_time, client_time):
 	latency = (OS.get_system_time_msecs() - client_time) / 2
@@ -76,7 +76,7 @@ func notify_cast_start(target, spell_id):
 	pass
 	
 remote func notify_cast_finished():
-	get_node("../World/Player").finish_cast()
+	get_node("../SceneHandler/World/Player").finish_cast()
 	pass
 	
 	

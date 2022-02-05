@@ -41,3 +41,8 @@ func unselect():
 	
 func select():
 	hp_bar_display.show()
+
+func die():
+	dead = true
+	rotation_degrees.x = 270
+	remove_from_group("group_Enemies")

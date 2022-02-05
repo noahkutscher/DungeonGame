@@ -1,6 +1,6 @@
 extends Node
 
-var network = NetworkedMultiplayerENet.new()
+var network: NetworkedMultiplayerENet
 var ip = "192.168.2.33"
 var port = 1909
 
@@ -9,6 +9,8 @@ var latency = 0
 var latency_array = []
 var client_clock = 0
 var delta_latency = 0
+
+var connected = false
 	
 func _physics_process(delta):
 	client_clock += int(delta * 1000) + delta_latency
@@ -19,6 +21,7 @@ func _physics_process(delta):
 		decimal_collector -= 1.00
 	
 func ConnectToServer():
+	network = NetworkedMultiplayerENet.new()
 	network.create_client(ip, port)
 	get_tree().set_network_peer(network)
 	
@@ -36,6 +39,8 @@ func _OnConnectionSucceeded():
 	timer.autostart = true
 	timer.connect("timeout", self, "DetermineLatency")
 	self.add_child(timer)
+	
+	connected = true
 	
 func SendPlayerState(player_state):
 	rpc_unreliable_id(1, "RecievePlayerState", player_state)
@@ -78,9 +83,7 @@ func notify_cast_start(target, spell_id):
 remote func notify_cast_finished():
 	get_node("../SceneHandler/World/Player").finish_cast()
 	pass
-	
-	
-	
-	
-	
-	
+
+remote func despawn_enemy(enemy_id):
+	get_node("../SceneHandler/World").DespawnEnemy(enemy_id)
+

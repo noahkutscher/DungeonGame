@@ -185,19 +185,21 @@ func handle_action():
 	
 	if !casting:
 		if Input.is_action_just_pressed("hk_2"):
+			start_cast(123, true)
 			pass
+		
 				
-		if not target == null:
-			if Input.is_action_just_pressed("hk_4"):
-				start_cast(0)
-				pass
-				
+		if not target == null:	
 			if Input.is_action_just_pressed("hk_1"):
 				hud.find_node("Slot1", true).texture = load("res://GUI/HUD/ActiveFrame.png")
 				
-			if Input.is_action_just_pressed("hk_3") and target.get_class() == "Enemy":
+			if Input.is_action_just_pressed("hk_3") :
+				start_cast(666)
 				pass
 			
+			if Input.is_action_just_pressed("hk_4"):
+				start_cast(0)
+				pass
 ###############################
 ########## Targeting ##########
 ###############################
@@ -210,12 +212,20 @@ func setTarget(selection):
 	target = selection
 	just_selected = true
 	
-func start_cast(spell_id):
+func start_cast(spell_id, target_self = false):
 	casting = true
-	Server.notify_cast_start(int(target.name), spell_id)
+	if target == null or target_self:
+		Server.notify_cast_start(get_tree().get_network_unique_id(), spell_id)
+	else:
+		Server.notify_cast_start(int(target.name), spell_id)
 	
 func finish_cast():
 	casting = false
+	
+func notify_enemy_died(enemy_id):
+	if target != null:
+		if str(enemy_id) == target.name:
+			setTarget(null)
 
 ###############################
 ######## Mulitplayer ##########
@@ -224,3 +234,6 @@ func finish_cast():
 func DefinePlayerState():
 	player_state = {"T": Server.client_clock, "P": translation, "R": rotation, "M": is_moving, "J": is_jumping, "C": casting}
 	Server.SendPlayerState(player_state)
+	
+func setHP(new_hp):
+	hp_bar.value = new_hp

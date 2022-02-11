@@ -83,6 +83,9 @@ func notify_cast_start(target, spell_id):
 remote func notify_cast_finished():
 	get_node("../SceneHandler/World/Player").finish_cast()
 	pass
+	
+remote func notify_cast_successfull(success, instant):
+	get_node("../SceneHandler/World/Player").notify_cast_successfull(success, instant)
 
 remote func despawn_enemy(enemy_id):
 	get_node("../SceneHandler/World").DespawnEnemy(enemy_id)

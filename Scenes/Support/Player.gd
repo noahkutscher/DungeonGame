@@ -213,11 +213,17 @@ func setTarget(selection):
 	just_selected = true
 	
 func start_cast(spell_id, target_self = false):
-	casting = true
 	if target == null or target_self:
 		Server.notify_cast_start(get_tree().get_network_unique_id(), spell_id)
 	else:
 		Server.notify_cast_start(int(target.name), spell_id)
+		
+func notify_cast_successfull(success, instant):
+	if success:
+		if !instant:
+			casting = true
+	else:
+		hud.display_message("Cast Not Possible")
 	
 func finish_cast():
 	casting = false
@@ -237,3 +243,6 @@ func DefinePlayerState():
 	
 func setHP(new_hp):
 	hp_bar.value = new_hp
+	
+func setEnergy(new_energy):
+	energy_bar.value = new_energy

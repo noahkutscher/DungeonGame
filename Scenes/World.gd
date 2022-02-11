@@ -66,6 +66,7 @@ func _physics_process(delta):
 		for player in world_state_buffer[1]["PState"].keys():
 			if player == get_tree().get_network_unique_id():
 				get_node("Player").setHP(world_state_buffer[1]["PState"][player]["PlayerHealth"])
+				get_node("Player").setEnergy(world_state_buffer[1]["PState"][player]["PlayerMana"])
 				
 		for player in world_state_buffer[1]["Players"].keys():
 			if player == get_tree().get_network_unique_id():

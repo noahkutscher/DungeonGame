@@ -40,7 +40,7 @@ text = "Enter IP:"
 margin_top = 18.0
 margin_right = 256.0
 margin_bottom = 42.0
-text = "192.168.2.33"
+text = "192.168.2.51"
 
 [node name="Port_Comp" type="VBoxContainer" parent="Menu"]
 margin_top = 118.0

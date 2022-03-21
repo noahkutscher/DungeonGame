@@ -37,6 +37,8 @@ var buff_list: Array = []
 
 var player_state
 
+var guid
+
 # selection
 var just_selected: bool = false
 var target: Enemy = null setget setTarget
@@ -214,7 +216,7 @@ func setTarget(selection):
 	
 func start_cast(spell_id, target_self = false):
 	if target == null or target_self:
-		Server.notify_cast_start(get_tree().get_network_unique_id(), spell_id)
+		Server.notify_cast_start(guid, spell_id)
 	else:
 		Server.notify_cast_start(int(target.name), spell_id)
 		

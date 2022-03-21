@@ -45,8 +45,8 @@ func _OnConnectionSucceeded():
 func SendPlayerState(player_state):
 	rpc_unreliable_id(1, "RecievePlayerState", player_state)
 	
-remote func SpawnNewPlayer(player_id, spawn_position):
-	get_node("../SceneHandler/World").SpawnNewPlayer(player_id, spawn_position)
+remote func SpawnNewPlayer(player_id, spawn_position, server_guid):
+	get_node("../SceneHandler/World").SpawnNewPlayer(player_id, spawn_position, server_guid)
 
 remote func DespawnNewPlayer(player_id):
 	get_node("../SceneHandler/World").DespawnNewPlayer(player_id)
@@ -89,4 +89,7 @@ remote func notify_cast_successfull(success, instant):
 
 remote func despawn_enemy(enemy_id):
 	get_node("../SceneHandler/World").DespawnEnemy(enemy_id)
+	
+remote func SuccessfullyConnected(player_guid):
+	get_node("../SceneHandler/World").set_instance_guid(player_guid)
 

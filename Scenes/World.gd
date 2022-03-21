@@ -6,6 +6,8 @@ var last_world_state = 0
 var world_state_buffer = []
 const interpolation_offset = 100
 
+var instance_guid = -1
+
 var despawn_queue = []
 var disconnect_queue = []
 
@@ -17,12 +19,12 @@ func interpolate_y_rotation(rot_0, rot_1, factor):
 	return lerp(rot_0, rot_1, factor)
 	
 
-func SpawnNewPlayer(player_id, spawn_position):
+func SpawnNewPlayer(player_id, spawn_position, server_guid):
 	if get_tree().get_network_unique_id() == player_id:
 		return
 	var player = playerTeplate.instance()
 	player.translation = spawn_position
-	player.name = str(player_id)
+	player.name = str(server_guid)
 	get_node("OtherPlayers").add_child(player)
 	print("Spawn")
 	
@@ -64,12 +66,12 @@ func _physics_process(delta):
 		
 		######### syncing player state
 		for player in world_state_buffer[1]["PState"].keys():
-			if player == get_tree().get_network_unique_id():
+			if player == instance_guid:
 				get_node("Player").setHP(world_state_buffer[1]["PState"][player]["PlayerHealth"])
 				get_node("Player").setEnergy(world_state_buffer[1]["PState"][player]["PlayerMana"])
 				
 		for player in world_state_buffer[1]["Players"].keys():
-			if player == get_tree().get_network_unique_id():
+			if player == instance_guid:
 				continue
 			if not world_state_buffer[0]["Players"].has(player):
 				continue
@@ -82,7 +84,7 @@ func _physics_process(delta):
 				get_node("OtherPlayers/" + str(player)).casting = world_state_buffer[1]["Players"][player]["C"]
 			else:
 				if not player in disconnect_queue:
-					SpawnNewPlayer(player, world_state_buffer[1]["Players"][player]["P"])
+					SpawnNewPlayer(-1, world_state_buffer[1]["Players"][player]["P"], player)
 		######### syncing enemy state
 		for enemy in world_state_buffer[1]["Enemies"].keys():
 			if not world_state_buffer[0]["Enemies"].has(enemy):
@@ -112,4 +114,8 @@ func handle_enemy_died(enemy_id):
 	if !enemy.dead:
 		enemy.die()
 		get_node("Player").notify_enemy_died(enemy_id)
+		
+func set_instance_guid(guid):
+	instance_guid = guid
+	get_node("Player").guid = guid
 	
